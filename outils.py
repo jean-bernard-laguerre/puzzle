@@ -218,6 +218,7 @@ def enregistrer(score,x,y):
 
     f.close()
 
+
 def recuperer(x,y):
 
     f = open("scores.json", "r+")
