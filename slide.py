@@ -4,6 +4,7 @@ from outils import *
 pygame.init()
 
 ecran = pygame.display.set_mode((800,600))
+pygame.display.set_caption("Slide Puzzle")
 tdr = pygame.time.Clock()
 police_puzzle = pygame.font.SysFont('Arial', 28)
 
@@ -55,7 +56,7 @@ def ecran_score():
         statue_partie = 0
 
     lbl_score = police_puzzle.render(f"Puzzle completé en: {plateau.nbr_coups} coups", 1, 'black')
-    lbl_meilleur_score = police_puzzle.render(f"Meilleure score : {recuperer(taiile_x.num, taiile_y.num)} coups", 1, "black")
+    lbl_meilleur_score = police_puzzle.render(f"Meilleur score : {recuperer(taiile_x.num, taiile_y.num)} coups", 1, "black")
     ecran.blit(lbl_score,(250,200))
     ecran.blit(lbl_meilleur_score,(250, 300))
 

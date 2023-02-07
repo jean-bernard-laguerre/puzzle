@@ -59,8 +59,8 @@ class Piece():
 
     def __init__(self, num, x, y, police):
         self.num = str(num)
-        self.surface = police.render(self.num, 1, 'black')
-        self.rect = pygame.Rect(x, y, 75, 75)
+        self.texte = police.render(self.num, 1, 'black')
+        self.rect = pygame.Rect(x, y, 70, 70)
         
 
     def affichage(self, surface, x, y):
@@ -69,7 +69,7 @@ class Piece():
         self.rect.y = y
 
         pygame.draw.rect(surface, 'blue', self.rect, 2)
-        surface.blit(self.surface, (self.rect.x+30, self.rect.y+20))      
+        surface.blit(self.texte, ((self.rect.x + 35) - self.texte.get_rect().width/2, (self.rect.y + 35) - self.texte.get_rect().height/2))     
         
 
 class Bouton():
