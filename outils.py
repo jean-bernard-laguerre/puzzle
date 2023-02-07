@@ -1,6 +1,7 @@
 import pygame
 import random
 import string
+import json
 import time
 
 
@@ -17,36 +18,38 @@ class Plateau():
             for j,case in enumerate(ligne):
 
                 if case != 0:
-                    case.affichage(surface, 50+j*80, 50+i*80)
+                    case.affichage(surface, 25+j*80, 25+i*80)
                     
         x = self.position['x']
         y = self.position['y']
 
         touche = pygame.key.get_pressed()
-        action = True
+        action = False
 
-        if touche[pygame.K_RIGHT] and action:
-            self.contenu, self.position['x'], self.position['y'] = deplacement(self.contenu, x, y, 'Droite')
-            action = False
-
-        if touche[pygame.K_LEFT] and action:
-            self.contenu, self.position['x'], self.position['y']= deplacement(self.contenu, x, y, 'Gauche')
-            action = False
-
-        if touche[pygame.K_UP] and action:
-            self.contenu, self.position['x'], self.position['y'] = deplacement(self.contenu, x, y, 'Haut')
-            action = False
-
-        if touche[pygame.K_DOWN] and action:
-            self.contenu, self.position['x'], self.position['y'] = deplacement(self.contenu, x, y, 'Bas')
-            action = False
-        
-        if action == False:
-            
-            time.sleep(.2)
-            self.nbr_coups += 1
+        if touche[pygame.K_RIGHT]:
             action = True
+            self.contenu, self.position['x'], self.position['y'] = deplacer(self.contenu, x, y, 'Droite')
 
+        if touche[pygame.K_LEFT]:
+            action = True
+            self.contenu, self.position['x'], self.position['y']= deplacer(self.contenu, x, y, 'Gauche')
+
+        if touche[pygame.K_UP]:
+            action = True
+            self.contenu, self.position['x'], self.position['y'] = deplacer(self.contenu, x, y, 'Haut')           
+
+        if touche[pygame.K_DOWN]:
+            action = True
+            self.contenu, self.position['x'], self.position['y'] = deplacer(self.contenu, x, y, 'Bas')
+
+        
+        if action:
+            time.sleep(.2)
+
+            if self.position['x'] != x or self.position['y'] != y:
+                self.nbr_coups += 1
+
+            action = False
             return victoire(self.contenu)
             
         return False
@@ -97,9 +100,9 @@ class Bouton():
 class Entree():
 
     def __init__(self, x, y, police):
-        self.texte = ''
+        self.num = ''
         self.rect = pygame.Rect(x, y, 100, 40)
-        self.surface = police.render(self.texte, 1, 'black')
+        self.surface = police.render(self.num, 1, 'black')
         self.rect.h = self.surface.get_height()+20
 
     #Affiche l'entrée utilisateur permet d'écrire lorsque la souris est a l'interieur
@@ -114,12 +117,12 @@ class Entree():
                 if event.type == pygame.KEYDOWN:
 
                     if event.key == pygame.K_BACKSPACE:
-                        self.texte = self.texte[:-1]
+                        self.num = self.num[:-1]
 
                     elif pygame.key.name(event.key) in string.digits:
-                        self.texte += pygame.key.name(event.key)
+                        self.num += pygame.key.name(event.key)
 
-                self.surface = police.render(self.texte, 1, 'black')
+                self.surface = police.render(self.num, 1, 'black')
                 self.rect.w = max(100 ,self.surface.get_width()+20)
         
         pygame.draw.rect(surface, 'lightblue', self.rect, 2)
@@ -157,7 +160,7 @@ def gen_plateau(x, y, police):
     return (plateau, pos_x, pos_y)
 
 
-def deplacement(plateau, x, y, direction):
+def deplacer(plateau, x, y, direction):
 
     if direction == 'Gauche':
         if y-1 >= 0:
@@ -165,7 +168,7 @@ def deplacement(plateau, x, y, direction):
             y -= 1
 
     if direction == 'Droite':
-        if y+1 < len(plateau):
+        if y+1 < len(plateau[x]):
             plateau[x][y] ,plateau[x][y+1] = plateau[x][y+1], plateau[x][y]
             y += 1
 
@@ -178,7 +181,7 @@ def deplacement(plateau, x, y, direction):
         if x-1 >= 0:
             plateau[x][y], plateau[x-1][y] = plateau[x-1][y], plateau[x][y]
             x -= 1
-  
+    
     return (plateau, x, y)
 
 
@@ -187,7 +190,7 @@ def victoire(plateau):
     precedent = 0
 
     for x in range(len(plateau)):
-        for y in range(len(plateau)):
+        for y in range(len(plateau[x])):
             
             if plateau[x][y] == 0 :
                 continue
@@ -199,8 +202,26 @@ def victoire(plateau):
     return True
 
 
-def enregistrer(score):
-    pass
+def enregistrer(score,x,y):
 
-def recuperer():
-    pass
+    f = open("scores.json", "r+")
+    scores = json.load(f)
+
+    if f"{x}:{y}" not in scores:
+        scores[f"{x}:{y}"] = []
+
+    if score > 0:
+        scores[f"{x}:{y}"].append(score)
+
+    f.seek(0)
+    json.dump(scores, f, indent=4)
+
+    f.close()
+
+def recuperer(x,y):
+
+    f = open("scores.json", "r+")
+    scores = json.load(f)
+
+    f.close()
+    return sorted(scores[f"{x}:{y}"])[0]
