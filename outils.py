@@ -5,7 +5,7 @@ import json
 import time
 
 
-class Plateau():
+class Puzzle():
 
     def __init__(self, x, y, police):
         self.position = {'x': 0, 'y': 0}
@@ -14,6 +14,7 @@ class Plateau():
     
     def affichage(self, surface):
 
+        #Affichage du puzzle
         for i,ligne in enumerate(self.contenu):
             for j,case in enumerate(ligne):
 
@@ -26,6 +27,7 @@ class Plateau():
         touche = pygame.key.get_pressed()
         action = False
 
+        #Deplacement avec les fleches
         if touche[pygame.K_RIGHT]:
             action = True
             self.contenu, self.position['x'], self.position['y'] = deplacer(self.contenu, x, y, 'Droite')
@@ -69,6 +71,7 @@ class Piece():
         self.rect.y = y
 
         pygame.draw.rect(surface, 'blue', self.rect, 2)
+        #Affiche le numero au centre de la piece
         surface.blit(self.texte, ((self.rect.x + 35) - self.texte.get_rect().width/2, (self.rect.y + 35) - self.texte.get_rect().height/2))     
         
 
@@ -128,7 +131,7 @@ class Entree():
         pygame.draw.rect(surface, 'lightblue', self.rect, 2)
         surface.blit(self.surface, (self.rect.x+10, self.rect.y+10))
 
-
+#Genere le puzzle de taille donné en placant les pieces au hasard, retourne aussi les coordonnés de la case vide
 def gen_plateau(x, y, police):
 
     nombres = []
@@ -159,7 +162,7 @@ def gen_plateau(x, y, police):
 
     return (plateau, pos_x, pos_y)
 
-
+#Deplace la case vide en echangeant la valeur des deux cases correspondant a la direction
 def deplacer(plateau, x, y, direction):
 
     if direction == 'Gauche':
@@ -184,7 +187,7 @@ def deplacer(plateau, x, y, direction):
     
     return (plateau, x, y)
 
-
+#Teste si les pieces du puzzle sont dans l'ordre croissant
 def victoire(plateau):
 
     precedent = 0
@@ -201,7 +204,7 @@ def victoire(plateau):
     
     return True
 
-
+#Ajoute le score dans la categorie correspondant a la taille du puzzle
 def enregistrer(score,x,y):
 
     f = open("scores.json", "r+")
@@ -218,7 +221,7 @@ def enregistrer(score,x,y):
 
     f.close()
 
-
+#Recupere le Meilleur score de la categorie choisie
 def recuperer(x,y):
 
     f = open("scores.json", "r+")
